@@ -16,8 +16,9 @@ from scipy.spatial import KDTree
 from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import os
 
-
+os.makedirs('images', exist_ok=True)  # folder to store all output plots
 #%% utility functions
 def show_cloud(points_plt):
     ax = plt.axes(projection='3d')
@@ -29,17 +30,21 @@ def show_scatter(x,y):
     plt.show()
 
 def get_ground_level(pcd):
-    return 64
+    counts, bin_edges = np.histogram(pcd[:, 2], bins=200)
+    peak_bin = np.argmax(counts)
+    ground_z = (bin_edges[peak_bin] + bin_edges[peak_bin + 1]) / 2.0
+    return ground_z
 
 
 #%% read file containing point cloud data
 pcd = np.load("dataset1.npy")
+print("Dataset1 shape:", pcd.shape)
 
 pcd.shape
 
 #%% show downsampled data in external window
-%matplotlib qt
-show_cloud(pcd)
+# %matplotlib qt  
+#show_cloud(pcd)
 #show_cloud(pcd[::10]) # keep every 10th point
 
 #%% remove ground plane
@@ -59,7 +64,22 @@ Add the histogram plots to your project readme
 est_ground_level = get_ground_level(pcd)
 print(est_ground_level)
 
+# Ploting the Z histogram so the ground peak is clearly visible
+plt.figure(figsize=(8, 4))
+plt.hist(pcd[:, 2], bins=200, color='steelblue', edgecolor='none')
+plt.axvline(est_ground_level, color='red', linestyle='--', linewidth=1.5,
+            label=f'Ground level = {est_ground_level:.3f}')
+plt.xlabel('Z (height)')
+plt.ylabel('Number of points')
+plt.title('Dataset1 – Z-value Histogram (Ground Detection)')
+plt.legend()
+plt.tight_layout()
+plt.savefig('images/dataset1_task1_histogram.png', dpi=150)
+plt.show()
+
+#%% filter out ground points
 pcd_above_ground = pcd[pcd[:,2] > est_ground_level] 
+print("Points above ground:", pcd_above_ground.shape)
 #%%
 pcd_above_ground.shape
 
