@@ -211,7 +211,7 @@ plt.savefig('images/dataset1_task3_catenary.png', dpi=150)
 plt.show()
 
 # ════════════════════════════════════════════════════════════════════════════
-# DATASET 2 – full pipeline
+# DATASET 2 – repeat all tasks for the second dataset
 # ════════════════════════════════════════════════════════════════════════════
 #%%
 pcd = np.load("dataset2.npy")
